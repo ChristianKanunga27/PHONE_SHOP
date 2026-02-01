@@ -417,6 +417,54 @@ nav ul.active {
             width: 100%;
         }
 
+        /* Video advertisement section styles */
+        .video-ad {
+            padding: 60px 5%;
+            background: linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%);
+            max-width: 1400px;
+            margin: 40px auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.03);
+        }
+        .video-ad .video-wrapper {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .video-ad .video-description {
+            flex: 1;
+            min-width: 280px;
+            max-width: 560px;
+        }
+        .video-ad h2 {
+            margin-bottom: 10px;
+            color: #1F2937;
+        }
+        .video-ad p {
+            color: #6B7280;
+            margin-bottom: 20px;
+        }
+        .video-ad .video-container {
+            flex: 1;
+            min-width: 300px;
+            max-width: 640px;
+        }
+        .video-ad video,
+        .video-ad iframe {
+            width: 100%;
+            height: 360px;
+            border-radius: 10px;
+            border: 1px solid #E5E7EB;
+            background: #000;
+        }
+        @media (max-width: 768px) {
+            .video-ad video,
+            .video-ad iframe { height: 220px; }
+            .video-ad .video-wrapper { gap: 16px; }
+        }
+
         .section-title {
             text-align: center;
             font-size: clamp(32px, 5vw, 42px);
@@ -902,14 +950,14 @@ nav ul.active {
             </div>
             <div class="collection-card">
                 <div class="collection-image">
-                    <img src="i phone4.avif" alt="iPhone SE (2024)">
+                    <img src="i phone4.avif" alt="i Phone 16">
                 </div>
                 <div class="collection-info">
-                    <h3>iPhone SE (2024)</h3>
+                    <h3>i Phone 16</h3>
                     <p class="collection-model">Budget-Friendly Phones</p>
                     <p class="collection-price">TZS 497,500</p>
                     <p>Quality phones at great prices. Perfect for everyday use without breaking the bank.</p>
-                    <button class="collection-btn buy-now" onclick="window.location.href='registra.html'" aria-label="Buy iPhone SE (2024)">Buy Now</button>
+                    <button class="collection-btn buy-now" onclick="window.location.href='registra.html'" aria-label="Buy i Phone 16">Buy Now</button>
                 </div>
             </div>
             <div class="collection-card">
@@ -926,14 +974,14 @@ nav ul.active {
             </div>
             <div class="collection-card">
                 <div class="collection-image">
-                    <img src="i phone12.avif" alt="iPhone 15 Pro Max">
+                    <img src="i phone12.avif" alt="i phone 13 pro max">
                 </div>
                 <div class="collection-info">
-                    <h3>iPhone 15 Pro Max</h3>
+                    <h3>i phone 13 pro max</h3>
                     <p class="collection-model">Camera Specialist Phones</p>
                     <p class="collection-price">TZS 2,247,500</p>
                     <p>Phones with exceptional camera systems for photography enthusiasts. Professional-grade imaging.</p>
-                    <button class="collection-btn buy-now" onclick="window.location.href='registra.html'" aria-label="Buy iPhone 15 Pro Max">Buy Now</button>
+                    <button class="collection-btn buy-now" onclick="window.location.href='registra.html'" aria-label="Buy i phone 13 pro max">Buy Now</button>
                 </div>
             </div>
             <div class="collection-card">
@@ -962,10 +1010,30 @@ nav ul.active {
             </div>
         </div>
     </section>
- 
+
     <div class="more-button-container">
         <button class="btn-more" onclick="document.getElementById('testimonials').scrollIntoView({behavior:'smooth'})" aria-label="See more"><span class="plus">+</span><span>More</span></button>
     </div>
+
+    <!-- Video Advertisement Section -->
+    <section class="video-ad" id="video-ad">
+        <div class="section-title" style="margin-bottom:20px;">Watch Our Latest Ads</div>
+        <div class="video-wrapper">
+            <div class="video-description">
+                <h2>Introducing the New iPhone Collection</h2>
+                <p>Watch our short promo to see the phones in action — beautiful displays, powerful cameras, and unbeatable performance. Replace this video with your own file or a YouTube embed if you prefer.</p>
+                <button class="btn-primary" onclick="window.location.href='registra.html'">Shop Now</button>
+            </div>
+            <div class="video-container">
+                <!-- Replace src with your promo.mp4 or use an iframe for YouTube -->
+                <video autoplay muted loop playsinline poster="i phone3.avif" preload="metadata" oncontextmenu="return false;" tabindex="-1" aria-hidden="true">
+                    <source src="phoneV.mp4" type="video/mp4">
+                    Your browser does not support the video tag. <a href="phoneV.mp4">Download the video</a>.
+                </video>
+                <!-- Example YouTube fallback (uncomment to use): -->
+                <!-- <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1" title="Promo video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
+            </div>
+    </section>
 
     <!-- Login modal -->
     <div id="loginModal" class="login-modal" role="dialog" aria-modal="true" aria-hidden="true">
@@ -1136,9 +1204,9 @@ nav ul.active {
                 'iPhone 11',
                 'iPhone 12',
                 'iPhone 12 Pro',
-                'iPhone 13',
+                'iPhone 16 Pro',
                 'iPhone 13 Pro',
-                'iPhone 13 Pro Max',
+                'iPhone 25 Pro',
                 'iPhone 14',
                 'iPhone 14 Plus',
                 'iPhone 14 Pro',
@@ -1245,8 +1313,30 @@ nav ul.active {
             window.location.href = 'account.html';
         }
 
-        // If URL contains showLogin=1, open modal and prefill email if provided
+        // Ensure promo video plays; if autoplay is blocked, replace it with the poster image
         (function(){
+            const vid = document.querySelector('#video-ad video');
+            if(vid){
+                // try to play; if rejected, replace with poster image to avoid showing play overlay
+                const playPromise = vid.play();
+                if(playPromise !== undefined){
+                    playPromise.catch(() => {
+                        try{
+                            vid.style.display = 'none';
+                            const img = document.createElement('img');
+                            img.src = vid.getAttribute('poster') || 'i phone3.avif';
+                            img.alt = 'Promo video';
+                            img.style.width = '100%';
+                            img.style.height = 'auto';
+                            img.style.borderRadius = '10px';
+                            img.setAttribute('aria-hidden','false');
+                            vid.parentElement.appendChild(img);
+                        } catch(e){ /* ignore */ }
+                    });
+                }
+            }
+
+            // If URL contains showLogin=1, open modal and prefill email if provided
             const params = new URLSearchParams(window.location.search);
             if(params.get('showLogin')){
                 openLoginModal(params.get('email'));
