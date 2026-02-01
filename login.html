@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login - PhoneHub</title>
+  <style>
+     
+    :root {
+      --accent: #FF9500;            
+      --accent-contrast: #ffffff;  
+      --bg: #F3F4F6;              
+      --surface: #ffffff;         
+      --text: #1F2937;            
+      --muted: #6B7280;           
+      --error: #D14343;          
+      --success-bg: #ECFDF5;       
+      --success-border: #A7F3D0;    
+      --radius: 8px;              
+      --shadow: 0 10px 30px rgba(0,0,0,0.06);
+      --focus: rgba(255,149,0,0.12);  
+    }
+ 
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 32px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .card {
+      max-width: 480px;         
+      margin: 0 auto;
+      background: var(--surface);
+      padding: 20px;
+      border-radius: calc(var(--radius) + 4px);
+      box-shadow: var(--shadow);
+    }
+
+    h1 { margin: 0 0 12px; font-size: 20px; }
+
+    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #E5E7EB;
+      border-radius: var(--radius);
+      margin-bottom: 10px;
+      font-size: 14px;
+      background: #fff;
+      transition: box-shadow 120ms ease, border-color 120ms ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--focus);
+    }
+ 
+    .row { display: flex; gap: 8px; align-items: center; }
+    .actions { display: flex; gap: 10px; margin-top: 8px; }
+ 
+    .btn {
+      background: var(--accent);
+      color: var(--accent-contrast);
+      border: none;
+      padding: 10px 14px;
+      border-radius: calc(var(--radius) - 2px);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn:focus { outline: 2px solid rgba(0,0,0,0.06); outline-offset: 2px; }
+
+    .secondary {
+      background: transparent;
+      border: 2px solid #E5E7EB;
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: calc(var(--radius) - 2px);
+    }
+
+    .show-hide {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      color: var(--muted);
+      padding: 6px;
+    }
+ 
+    .help { font-size: 13px; color: var(--muted); margin-top: 10px; }
+    .error { color: var(--error); font-size: 13px; margin-top: 8px; display: none; }
+    .success { background: var(--success-bg); border: 1px solid var(--success-border); padding: 8px; border-radius: 6px; color: #065F46; display: none; margin-top: 10px; }
+
+    
+    @media (max-width: 520px) {
+      body { padding: 16px; }
+      .card { padding: 16px; }
+    }
+ 
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Login</h1>
+
+    <div id="info" class="help" style="display:none"></div>
+
+    <form id="loginForm" novalidate>
+      <div>
+        <label for="email">Email</label>
+        <input id="email" type="email" required placeholder="you@example.com">
+      </div>
+
+      <div>
+        <label for="password">Password</label>
+        <div class="row">
+          <input id="password" type="password" required placeholder="Your password">
+          <button type="button" id="togglePwd" class="show-hide" aria-label="Show password">Show</button>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+        <input id="remember" type="checkbox">
+        <label for="remember" style="margin:0;font-size:13px;color:var(--muted)">Remember my email</label>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn">Login</button>
+        <button type="button" class="secondary" onclick="location.href='registra.html'">Register</button>
+      </div>
+
+      <div style="margin-top:10px">
+        <a href="#" id="forgot">Forgot password?</a>
+      </div>
+
+      <div id="error" class="error" role="alert"></div>
+      <div id="success" class="success"></div>
+    </form>
+  </div>
+
+  <script>
+
+    function getParam(name) { return new URLSearchParams(window.location.search).get(name); }
+
+    function showError(msg) { const e = document.getElementById('error'); e.textContent = msg; e.style.display = 'block'; }
+    function clearError() { const e = document.getElementById('error'); e.textContent = ''; e.style.display = 'none'; }
+ 
+    (function() {
+      const pref = getParam('email');
+      const remembered = localStorage.getItem('rememberedEmail');
+      if (pref) {
+        document.getElementById('email').value = decodeURIComponent(pref);
+        document.getElementById('info').textContent = 'Email pre-filled from previous step.';
+        document.getElementById('info').style.display = 'block';
+      } else if (remembered) {
+        document.getElementById('email').value = remembered;
+      }
+    })();
+
+    document.getElementById('togglePwd').addEventListener('click', function(){
+      const pwd = document.getElementById('password');
+      if (pwd.type === 'password') { pwd.type = 'text'; this.textContent = 'Hide'; this.setAttribute('aria-label','Hide password'); }
+      else { pwd.type = 'password'; this.textContent = 'Show'; this.setAttribute('aria-label','Show password'); }
+    });
+
+    document.getElementById('forgot').addEventListener('click', function(e){
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      if (!email) { showError('Enter your email first to reset password.'); return; }
+      clearError();
+      document.getElementById('success').textContent = 'If this email is registered, a password reset link has been sent (simulated).';
+      document.getElementById('success').style.display = 'block';
+      setTimeout(()=>{ document.getElementById('success').style.display = 'none'; }, 4000);
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', function(e){
+      e.preventDefault(); clearError();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const remember = document.getElementById('remember').checked;
+
+      if (!email || !password) { showError('Please enter email and password.'); return; }
+
+      let users = [];
+      try { users = JSON.parse(localStorage.getItem('users') || '[]'); } catch (err) { users = []; }
+
+      const user = users.find(u => u.email === email);
+      if (!user) { showError('No account found with this email. Please register.'); return; }
+      if (user.password !== password) { showError('Incorrect password.'); return; }
+
+      if (remember) {
+        localStorage.setItem('rememberedEmail', email);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+      }
+
+      localStorage.setItem('currentUser', JSON.stringify({ email: user.email, name: user.name }));
+
+      window.location.href = 'account.html';
+    });
+  </script>
+</body>
+</html>

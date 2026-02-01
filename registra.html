@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register / Checkout - PhoneHub</title>
+    <style>
+     
+    :root {
+      --accent: #FF9500;
+      --accent-contrast: #ffffff;
+      --bg: #F3F4F6;
+      --surface: #ffffff;
+      --muted: #6B7280;
+      --text: #1F2937;
+      --error: #D14343;
+      --success-bg: #ECFDF5;
+      --success-border: #A7F3D0;
+      --focus: rgba(255,149,0,0.12);
+    }
+
+     
+    * { box-sizing: border-box; }
+ 
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 32px;
+      -webkit-font-smoothing: antialiased;
+    }
+ 
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .product-summary {
+      background: linear-gradient(90deg, #ffffff 0%, #FFFBF2 100%);
+      border: 1px solid #F1E7D0;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+ 
+    .row { display: flex; gap: 12px; }
+    .col { flex: 1; min-width: 0;}
+
+    label { display: block; font-size: 13px; margin-bottom: 6px; color: var(--muted); }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      font-size: 14px;
+      background: #fff;
+      outline: none;
+      transition: box-shadow 120ms ease, border-color 120ms ease;
+    }
+
+    textarea { min-height: 80px; resize: vertical; }
+
+    input:focus, textarea:focus {
+      box-shadow: 0 0 0 4px var(--focus);
+      border-color: var(--accent);
+    }
+ 
+    .actions { display: flex; gap: 12px; align-items: center; margin-top: 14px; }
+
+    .btn {
+      background: var(--accent);
+      color: var(--accent-contrast);
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:focus { outline: 2px solid rgba(0,0,0,0.06); outline-offset: 2px; }
+
+    .btn.secondary {
+      background: transparent;
+      color: var(--text);
+      border: 2px solid #E5E7EB;
+    }
+ 
+    .note { font-size: 13px; color: var(--muted); margin-top: 12px; }
+    .error { color: var(--error); font-size: 13px; margin-top: 8px; }
+    .success { background: var(--success-bg); border: 1px solid var(--success-border); padding: 12px; border-radius: 8px; color: #065F46; }
+ 
+    @media (max-width: 600px) {
+      .row { flex-direction: column; }
+      .container { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Register & Checkout</h1>
+
+    <div id="productBox" class="product-summary" style="display:none">
+      <div><strong id="productName">Product name</strong></div>
+      <div id="productPrice" style="color:var(--muted);margin-top:4px">Price</div>
+    </div>
+ 
+    <form id="regForm" novalidate>
+      <div class="row">
+        <div class="col">
+          <label for="fullName">Full name</label>
+          <input id="fullName" name="fullName" required placeholder="John Doe">
+        </div>
+        <div class="col">
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" required placeholder="+255 7xx xxx xxx">
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" required placeholder="you@example.com">
+      </div>
+
+      <div style="margin-top:12px">
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password" required minlength="6" placeholder="Create a password">
+      </div>
+
+      <div style="margin-top:12px">
+        <label for="passwordConfirm">Repeat Password</label>
+        <input id="passwordConfirm" type="password" name="passwordConfirm" required minlength="6" placeholder="Repeat password">
+      </div>
+
+      <!-- hidden fields to receive product prefill -->
+      <input type="hidden" id="productInput" name="product">
+      <input type="hidden" id="priceInput" name="price">
+
+      <div class="actions">
+        <button type="submit" class="btn">Complete Registration</button>
+        <button type="button" class="btn secondary" onclick="location.href='home.html'">Cancel</button>
+      </div>
+
+      <div id="formError" class="error" role="alert" style="display:none"></div>
+    </form>
+
+    <div id="successBox" class="success" style="display:none;margin-top:16px">
+      <strong>Thank you!</strong>
+      <div id="successMessage" style="margin-top:8px"></div>
+      <div id="successActions" style="margin-top:8px"></div>
+    </div>
+
+    <p class="note">By completing registration you agree to our Terms of Service and Privacy Policy.</p>
+  </div>
+
+  <script>
+
+    function getParam(name) {
+      return new URLSearchParams(window.location.search).get(name);
+    }
+
+    function formatTZS(amount) {
+      return new Intl.NumberFormat('en-TZ', { style: 'currency', currency: 'TZS', maximumFractionDigits: 0 }).format(Number(amount || 0));
+    }
+
+    function showProduct(name, price) {
+      const box = document.getElementById('productBox');
+      if (!name) { box.style.display = 'none'; return; }
+      document.getElementById('productName').textContent = decodeURIComponent(name);
+      document.getElementById('productInput').value = decodeURIComponent(name);
+      if (price) {
+        document.getElementById('productPrice').textContent = formatTZS(price);
+        document.getElementById('priceInput').value = Number(price);
+      }
+      box.style.display = 'block';
+    }
+
+    (function() {
+      const product = getParam('product');
+      const price = getParam('price');
+      if (product) showProduct(product, price);
+    })();
+
+    function validateForm() {
+      const fullName = document.getElementById('fullName').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const passwordConfirm = document.getElementById('passwordConfirm').value;
+
+      if (!fullName || !phone || !email || !password || !passwordConfirm) return { ok: false, message: 'Please fill in all required fields.' };
+      if (password.length < 6) return { ok: false, message: 'Password must be at least 6 characters.' };
+      if (password !== passwordConfirm) return { ok: false, message: 'Passwords do not match.' };
+      if (!/^\+?[0-9\s-]{8,}$/.test(phone)) return { ok: false, message: 'Please provide a valid phone number.' };
+      return { ok: true };
+    }
+
+    document.getElementById('regForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const errEl = document.getElementById('formError');
+      errEl.style.display = 'none';
+      errEl.textContent = '';
+
+      const result = validateForm();
+      if (!result.ok) {
+        errEl.textContent = result.message;
+        errEl.style.display = 'block';
+        return;
+      }
+
+      const name = document.getElementById('fullName').value.trim();
+      const product = document.getElementById('productInput').value;
+      const price = document.getElementById('priceInput').value;
+      const emailVal = document.getElementById('email').value.trim();
+      const passwordVal = document.getElementById('password').value;
+
+      // Save user to localStorage (demo only, not secure for production)
+      try {
+        const raw = localStorage.getItem('users');
+        const users = raw ? JSON.parse(raw) : [];
+        const existingIndex = users.findIndex(u => u.email === emailVal);
+        const userObj = { name: name, email: emailVal, password: passwordVal };
+        if (existingIndex > -1) {
+          users[existingIndex] = userObj; // overwrite existing
+        } else {
+          users.push(userObj);
+        }
+        localStorage.setItem('users', JSON.stringify(users));
+      } catch (err) {
+        console.warn('Could not save user to localStorage', err);
+      }
+
+      let message = 'Registration complete for ' + name + '.';
+      if (product) {
+        message += ' You are buying ' + product + ' for ' + formatTZS(price) + '.';
+      }
+
+      document.getElementById('regForm').style.display = 'none';
+      document.getElementById('successMessage').textContent = message;
+
+      // Add a button that sends user back to home and opens the login modal with their email
+      const successActions = document.getElementById('successActions');
+      if (successActions) {
+        const emailParam = encodeURIComponent(emailVal);
+        successActions.innerHTML = `<a class="btn" href="home.html?showLogin=1&email=${emailParam}">Go to Home & Login</a>`;
+      }
+
+      document.getElementById('successBox').style.display = 'block';
+    });
+  </script>
+</body>
+</html>

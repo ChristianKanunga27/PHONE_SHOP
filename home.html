@@ -580,7 +580,6 @@ nav ul.active {
             padding: 30px;
             border-radius: 12px;
             border-left: 4px solid #FF9500;
-            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
         }
 
@@ -791,6 +790,30 @@ nav ul.active {
                 font-size: 28px;
             }
         }
+
+        /* Login modal styles */
+        .login-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.4);
+            z-index: 2000;
+            padding: 20px;
+        }
+        .login-modal .modal-card {
+            background: #fff;
+            max-width: 420px;
+            width: 100%;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .login-modal h3{ margin: 0 0 12px; }
+        .login-modal input { margin-bottom: 10px; }
+        .login-modal .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+        .login-modal .close { background: transparent; border: none; font-size: 18px; cursor: pointer; }
     </style>
 </head>
 
@@ -799,7 +822,7 @@ nav ul.active {
     <header>
         <div class="header-container">
             <div class="logo">
-                <img src="https://via.placeholder.com/40x40?text=Logo" alt="Logo" style="width:40px;height:40px;border-radius:6px;object-fit:cover;">
+                <img src="i phone9.avif" alt="Logo" style="width:40px;height:40px;border-radius:6px;object-fit:cover;">
                 CIA_PHONES
             </div>
             <nav>
@@ -811,7 +834,7 @@ nav ul.active {
                 </ul>
             </nav>
             <div class="auth-buttons">
-                <button class="btn-login" onclick="window.location.href='login.html'">Login</button>
+                <button class="btn-login" onclick="openLoginModal()">Login</button>
                 <button class="btn-register" onclick="window.location.href='registra.html'">Register</button>
             </div>
             <div class="menu-toggle">
@@ -823,7 +846,7 @@ nav ul.active {
  
     <section class="hero" id="home">
         <div class="hero-content">
-            <h1>Discover the Latest <span>Premium</span> Smartphones</h1>
+            <h1>Discover the Latest <span>Premium</span> i phones</h1>
             <p>Get the newest phones with cutting-edge technology, amazing prices, and fast delivery. Join thousands of satisfied customers today.</p>
             <div class="hero-cta">
                 <button class="btn-primary" onclick="window.location.href='registra.html'">Shop Now</button>
@@ -841,30 +864,22 @@ nav ul.active {
 
     <section class="features">
         <div class="feature-card">
-            <div class="feature-icon">
-                <img src="phone2.png" alt="phone2" style="width:64px;height:64px;object-fit:cover;border-radius:10px;">
-            </div>
+            
             <h3>Fast Shipping</h3>
             <p>Free delivery on orders over $100. Get your phone delivered in 2-3 business days.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">
-                <img src="https://via.placeholder.com/80?text=Lock" alt="Secure Checkout">
-            </div>
+        
             <h3>Secure Checkout</h3>
             <p>100% secure payments with SSL encryption. Your data is always protected.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">
-                <img src="https://via.placeholder.com/80?text=Return" alt="Easy Returns">
-            </div>
+           
             <h3>Easy Returns</h3>
             <p>30-day return policy. No questions asked. Shop with confidence.</p>
         </div>
         <div class="feature-card">
-            <div class="feature-icon">
-                <img src="https://via.placeholder.com/80?text=Support" alt="24/7 Support">
-            </div>
+            
             <h3>24/7 Support</h3>
             <p>Customer support team available round the clock to help you.</p>
         </div>
@@ -875,62 +890,74 @@ nav ul.active {
         <div class="collection-grid">
             <div class="collection-card">
                 <div class="collection-image">
-                    <img src="https://via.placeholder.com/600x250?text=Flagship+Demo" alt="Latest Flagship">
+                    <img src="i phone3.avif" alt="iPhone 15 Pro">
                 </div>
                 <div class="collection-info">
-                    <h3>Latest Flagship Phones</h3>
+                    <h3>iPhone 15 Pro</h3>
+                    <p class="collection-model">Latest Flagship Phones</p>
+                    <p class="collection-price">TZS 2,497,500</p>
                     <p>Premium flagship models with top-tier processors and stunning displays. Latest technology available.</p>
-                    <button class="collection-btn">View Collection</button>
+                    <button class="collection-btn buy-now" onclick="window.location.href='registra.html'" aria-label="Buy iPhone 15 Pro">Buy Now</button>
                 </div>
             </div>
             <div class="collection-card">
                 <div class="collection-image">
-                    <img src="https://via.placeholder.com/600x250?text=Budget+Demo" alt="Budget-Friendly">
+                    <img src="i phone4.avif" alt="iPhone SE (2024)">
                 </div>
                 <div class="collection-info">
-                    <h3>Budget-Friendly Phones</h3>
+                    <h3>iPhone SE (2024)</h3>
+                    <p class="collection-model">Budget-Friendly Phones</p>
+                    <p class="collection-price">TZS 497,500</p>
                     <p>Quality phones at great prices. Perfect for everyday use without breaking the bank.</p>
-                    <button class="collection-btn">View Collection</button>
+                    <button class="collection-btn buy-now" onclick="window.location.href='registra.html'" aria-label="Buy iPhone SE (2024)">Buy Now</button>
                 </div>
             </div>
             <div class="collection-card">
                 <div class="collection-image">
-                    <img src="https://via.placeholder.com/600x250?text=Gaming+Demo" alt="Gaming Phones">
+                    <img src="i phone8.avif" alt="iPhone 14 Pro Max">
                 </div>
                 <div class="collection-info">
-                    <h3>Gaming Phones</h3>
+                    <h3>iPhone 14 Pro Max</h3>
+                    <p class="collection-model">Gaming Phones</p>
+                    <p class="collection-price">TZS 1,997,500</p>
                     <p>High-performance phones optimized for gaming with powerful processors and cooling systems.</p>
-                    <button class="collection-btn">View Collection</button>
+                    <button class="collection-btn buy-now" onclick="window.location.href='registra.html'" aria-label="Buy iPhone 14 Pro Max">Buy Now</button>
                 </div>
             </div>
             <div class="collection-card">
                 <div class="collection-image">
-                    <img src="https://via.placeholder.com/600x250?text=Camera+Demo" alt="Camera Specialist">
+                    <img src="i phone12.avif" alt="iPhone 15 Pro Max">
                 </div>
                 <div class="collection-info">
-                    <h3>Camera Specialist Phones</h3>
+                    <h3>iPhone 15 Pro Max</h3>
+                    <p class="collection-model">Camera Specialist Phones</p>
+                    <p class="collection-price">TZS 2,247,500</p>
                     <p>Phones with exceptional camera systems for photography enthusiasts. Professional-grade imaging.</p>
-                    <button class="collection-btn">View Collection</button>
+                    <button class="collection-btn buy-now" onclick="window.location.href='registra.html'" aria-label="Buy iPhone 15 Pro Max">Buy Now</button>
                 </div>
             </div>
             <div class="collection-card">
                 <div class="collection-image">
-                    <img src="https://via.placeholder.com/600x250?text=Business+Demo" alt="Business Phones">
+                    <img src="i phone7.avif" alt="iPhone 14 Plus">
                 </div>
                 <div class="collection-info">
-                    <h3>Business Phones</h3>
+                    <h3>iPhone 14 Plus</h3>
+                    <p class="collection-model">Business Phones</p>
+                    <p class="collection-price">TZS 1,372,500</p>
                     <p>Professional phones designed for business users. Long battery life and productivity features.</p>
-                    <button class="collection-btn">View Collection</button>
+                    <button class="collection-btn buy-now" onclick="window.location.href='registra.html'" aria-label="Buy iPhone 14 Plus">Buy Now</button>
                 </div>
             </div>
             <div class="collection-card">
                 <div class="collection-image">
-                    <img src="https://via.placeholder.com/600x250?text=Refurbished+Demo" alt="Refurbished Phones">
+                    <img src="i phone1.avif" alt="iPhone 12">
                 </div>
                 <div class="collection-info">
-                    <h3>Refurbished Phones</h3>
+                    <h3>iPhone 12</h3>
+                    <p class="collection-model">Refurbished Phones</p>
+                    <p class="collection-price">TZS 622,500</p>
                     <p>Certified refurbished phones at discounted prices. Fully tested and like-new condition.</p>
-                    <button class="collection-btn">View Collection</button>
+                    <button class="collection-btn buy-now" onclick="window.location.href='registra.html'" aria-label="Buy iPhone 12">Buy Now</button>
                 </div>
             </div>
         </div>
@@ -938,6 +965,23 @@ nav ul.active {
  
     <div class="more-button-container">
         <button class="btn-more" onclick="document.getElementById('testimonials').scrollIntoView({behavior:'smooth'})" aria-label="See more"><span class="plus">+</span><span>More</span></button>
+    </div>
+
+    <!-- Login modal -->
+    <div id="loginModal" class="login-modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-card" role="document">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <h3>Login</h3>
+                <button class="close" onclick="closeLoginModal()" aria-label="Close">&times;</button>
+            </div>
+            <div id="loginError" style="color:#D14343;display:none;margin-bottom:8px"></div>
+            <input id="modalEmail" type="email" placeholder="Email" style="width:100%;padding:10px;border:1px solid #E5E7EB;border-radius:6px;margin-bottom:8px">
+            <input id="modalPassword" type="password" placeholder="Password" style="width:100%;padding:10px;border:1px solid #E5E7EB;border-radius:6px;margin-bottom:8px">
+            <div class="modal-actions">
+                <button class="btn" onclick="submitLoginFromModal()">Login</button>
+                <button class="btn secondary" onclick="closeLoginModal()">Cancel</button>
+            </div>
+        </div>
     </div>
  
     <section class="testimonials" id="testimonials">
@@ -1067,17 +1111,63 @@ nav ul.active {
             if (!moreBtn) return;
             let clickCount = 0; // number of times extra cards have been added
 
+            const additionalImages = [
+                'i phone1.avif',
+                'i phone2.avif',
+                'i phone3.avif',
+                'i phone4.avif',
+                'i phone5.avif',
+                'i phone7.avif',
+                'i phone8.avif',
+                'i phone9.avif',
+                'i phone10.avif',
+                'i phone12.avif',
+                'i phone 6.avif',
+                'phone1.png'
+            ];
+
+            // matching price for each image above (USD whole numbers)
+            const additionalPrices = [
+                499, 299, 899, 199, 699, 129, 399, 549, 799, 1099, 259, 499
+            ];
+
+            const USD_TO_TZS = 2500; // editable exchange rate (1 USD = 2500 TZS)
+            const additionalNames = [
+                'iPhone 11',
+                'iPhone 12',
+                'iPhone 12 Pro',
+                'iPhone 13',
+                'iPhone 13 Pro',
+                'iPhone 13 Pro Max',
+                'iPhone 14',
+                'iPhone 14 Plus',
+                'iPhone 14 Pro',
+                'iPhone 14 Pro Max',
+                'iPhone 15',
+                'iPhone 15 Plus'
+            ];
+
             function createCard(index) {
+                // choose an image, name and price based on the index
+                const idx = (index - 1) % additionalImages.length;
+                const imgName = additionalImages[idx];
+                const imgSrc = encodeURI(imgName); // encode filename spaces
+                const name = additionalNames[idx];
+                const priceUsd = additionalPrices[idx % additionalPrices.length];
+                const priceTzs = priceUsd * USD_TO_TZS;
+                const formattedPrice = new Intl.NumberFormat('en-TZ', { style: 'currency', currency: 'TZS', maximumFractionDigits: 0 }).format(priceTzs);
+
                 const card = document.createElement('div');
                 card.className = 'collection-card';
                 card.innerHTML = `
                     <div class="collection-image">
-                        <img src="https://via.placeholder.com/600x250?text=More+Demo+${index}" alt="More Demo ${index}">
+                        <img src="${imgSrc}" alt="${name}" loading="lazy">
                     </div>
                     <div class="collection-info">
-                        <h3>More Collection ${index}</h3>
-                        <p>Additional collection loaded on demand. Placeholder content for demo purposes.</p>
-                        <button class="collection-btn">View Collection</button>
+                        <h3>${name}</h3>
+                        <p class="collection-price">${formattedPrice}</p>
+                        <p>Additional collection loaded on demand.</p>
+                        <button class="collection-btn buy-now" onclick="window.location.href='registra.html'" aria-label="Buy ${name} for ${formattedPrice}">Buy Now</button>
                     </div>
                 `;
                 return card;
@@ -1119,6 +1209,48 @@ nav ul.active {
                     clickCount++;
                 }, 300);
             });
+        })();
+
+        // Login modal helpers
+        function openLoginModal(prefillEmail) {
+            const modal = document.getElementById('loginModal');
+            if(!modal) return;
+            if(prefillEmail) document.getElementById('modalEmail').value = decodeURIComponent(prefillEmail);
+            modal.style.display = 'flex';
+            modal.setAttribute('aria-hidden','false');
+            document.getElementById('modalEmail').focus();
+        }
+
+        function closeLoginModal(){
+            const modal = document.getElementById('loginModal'); if(!modal) return; modal.style.display='none'; modal.setAttribute('aria-hidden','true');
+            document.getElementById('modalEmail').value=''; document.getElementById('modalPassword').value=''; document.getElementById('loginError').style.display='none';
+        }
+
+        function submitLoginFromModal(){
+            const email = document.getElementById('modalEmail').value.trim();
+            const pwd = document.getElementById('modalPassword').value;
+            const err = document.getElementById('loginError'); err.style.display='none'; err.textContent='';
+            if(!email || !pwd) { err.textContent='Please enter email and password.'; err.style.display='block'; return; }
+
+            // check users saved in localStorage (demo only)
+            let users = [];
+            try { users = JSON.parse(localStorage.getItem('users') || '[]'); } catch (e) { users = []; }
+            const user = users.find(u => u.email === email);
+            if (!user) { err.textContent = 'No account found with this email.'; err.style.display = 'block'; return; }
+            if (user.password !== pwd) { err.textContent = 'Incorrect password.'; err.style.display = 'block'; return; }
+
+            // success: set currentUser and redirect to account page
+            localStorage.setItem('currentUser', JSON.stringify({ email: user.email, name: user.name }));
+            closeLoginModal();
+            window.location.href = 'account.html';
+        }
+
+        // If URL contains showLogin=1, open modal and prefill email if provided
+        (function(){
+            const params = new URLSearchParams(window.location.search);
+            if(params.get('showLogin')){
+                openLoginModal(params.get('email'));
+            }
         })();
     </script>
 </body>
