@@ -38,7 +38,7 @@ const db = mysql.createPool({
  });
 
 //the root fo the registration
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
     const { username,email,password} = req.body;
 
     const sqlInsert = "INSERT INTO phones (username,email,password) VALUES (?,?,?)";
