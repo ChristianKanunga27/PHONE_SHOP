@@ -84,7 +84,7 @@
       color: var(--accent-contrast);
       padding: 10px 16px;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
@@ -151,7 +151,7 @@
       <input type="hidden" id="priceInput" name="price">
 
       <div class="actions">
-        <button type="submit" class="btn">Complete Registration</button>
+        <button type="submit" class="btn" >Complete Registration</button>
         <button type="button" class="btn secondary" onclick="location.href='home.html'">Cancel</button>
       </div>
 
@@ -208,58 +208,24 @@
       if (!/^\+?[0-9\s-]{8,}$/.test(phone)) return { ok: false, message: 'Please provide a valid phone number.' };
       return { ok: true };
     }
-
-    document.getElementById('regForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const errEl = document.getElementById('formError');
-      errEl.style.display = 'none';
-      errEl.textContent = '';
-
-      const result = validateForm();
-      if (!result.ok) {
-        errEl.textContent = result.message;
-        errEl.style.display = 'block';
-        return;
+    document.getElementById('regForm').addEventListener('submit', ()=>{
+      const register = {
+        email,
+        fullName,
+        password
       }
-
-      const name = document.getElementById('fullName').value.trim();
-      const product = document.getElementById('productInput').value;
-      const price = document.getElementById('priceInput').value;
-      const emailVal = document.getElementById('email').value.trim();
-      const passwordVal = document.getElementById('password').value;
-
+      fetch('/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(register)
+      }). 
+      then(response => response.json()).
       
-      try {
-        const raw = localStorage.getItem('users');
-        const users = raw ? JSON.parse(raw) : [];
-        const existingIndex = users.findIndex(u => u.email === emailVal);
-        const userObj = { name: name, email: emailVal, password: passwordVal };
-        if (existingIndex > -1) {
-          users[existingIndex] = userObj; // overwrite existing
-        } else {
-          users.push(userObj);
-        }
-        localStorage.setItem('users', JSON.stringify(users));
-      } catch (err) {
-        console.warn('Could not save user to localStorage', err);
-      }
-
-      let message = 'Registration complete for ' + name + '.';
-      if (product) {
-        message += ' You are buying ' + product + ' for ' + formatTZS(price) + '.';
-      }
-
-      document.getElementById('regForm').style.display = 'none';
-      document.getElementById('successMessage').textContent = message;
-
-      // Add a button that sends user back to home and opens the login modal with their email
-      const successActions = document.getElementById('successActions');
-      if (successActions) {
-        const emailParam = encodeURIComponent(emailVal);
-        successActions.innerHTML = `<a class="btn" href="home.html?showLogin=1&email=${emailParam}">Go to Home & Login</a>`;
-      }
-
-      document.getElementById('successBox').style.display = 'block';
+      catch(error => {
+        const errorBox = document.getElementById('formError');
+        errorBox.textContent = 'An error occurred. Please try again later.';
+        errorBox.style.display = 'block';
+      });
     });
   </script>
 </body>
