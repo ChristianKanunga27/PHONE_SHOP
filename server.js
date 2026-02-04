@@ -2,10 +2,13 @@
 
 const express = require('express');
 const mysql = require('mysql2');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 
  
 const app = express();
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -13,14 +16,14 @@ app.use(express.urlencoded({ extended: true }));
 
 const db = mysql.createPool({  
     host: 'localhost',
-    user: 'phone_user',       
-    password: 'userpassword', 
+    user: 'root',       
+    password: 'MyRoot123!', 
     database: 'phone_shop', 
 
     connectionLimit: 100,
     waitForConnections: true,
     queueLimit: 0,
-    port: 3307
+    port: 3306
 });
 
 
@@ -38,7 +41,7 @@ const db = mysql.createPool({
 app.post('/register', (req, res) => {
     const { username,email,password} = req.body;
 
-    const sqlInsert = "INSERT INTO users (username,email,password) VALUES (?,?,?)";
+    const sqlInsert = "INSERT INTO phones (username,email,password) VALUES (?,?,?)";
     db.query(sqlInsert, [username,email,password], (err, result) => {
         if (err) {
             console.error('Error inserting data into the database:', err);

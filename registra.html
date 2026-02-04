@@ -166,67 +166,49 @@
 
     <p class="note">By completing registration you agree to our Terms of Service and Privacy Policy.</p>
   </div>
+<script>
+document.getElementById('regForm').addEventListener('submit', (event) => {
+    event.preventDefault();
 
-  <script>
+    const fullName = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const passwordConfirm = document.getElementById('passwordConfirm').value;
 
-    function getParam(name) {
-      return new URLSearchParams(window.location.search).get(name);
+    if (!fullName || !email || !password || !passwordConfirm) {
+        const errorBox = document.getElementById('formError');
+        errorBox.textContent = 'Please fill in all required fields.';
+        errorBox.style.display = 'block';
+        return;
+    }
+    if (password !== passwordConfirm) {
+        const errorBox = document.getElementById('formError');
+        errorBox.textContent = 'Passwords do not match.';
+        errorBox.style.display = 'block';
+        return;
     }
 
-    function formatTZS(amount) {
-      return new Intl.NumberFormat('en-TZ', { style: 'currency', currency: 'TZS', maximumFractionDigits: 0 }).format(Number(amount || 0));
-    }
+    const register = { username: fullName, email, password };
 
-    function showProduct(name, price) {
-      const box = document.getElementById('productBox');
-      if (!name) { box.style.display = 'none'; return; }
-      document.getElementById('productName').textContent = decodeURIComponent(name);
-      document.getElementById('productInput').value = decodeURIComponent(name);
-      if (price) {
-        document.getElementById('productPrice').textContent = formatTZS(price);
-        document.getElementById('priceInput').value = Number(price);
-      }
-      box.style.display = 'block';
-    }
-
-    (function() {
-      const product = getParam('product');
-      const price = getParam('price');
-      if (product) showProduct(product, price);
-    })();
-
-    function validateForm() {
-      const fullName = document.getElementById('fullName').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const passwordConfirm = document.getElementById('passwordConfirm').value;
-
-      if (!fullName || !phone || !email || !password || !passwordConfirm) return { ok: false, message: 'Please fill in all required fields.' };
-      if (password.length < 6) return { ok: false, message: 'Password must be at least 6 characters.' };
-      if (password !== passwordConfirm) return { ok: false, message: 'Passwords do not match.' };
-      if (!/^\+?[0-9\s-]{8,}$/.test(phone)) return { ok: false, message: 'Please provide a valid phone number.' };
-      return { ok: true };
-    }
-    document.getElementById('regForm').addEventListener('submit', ()=>{
-      const register = {
-        email,
-        fullName,
-        password
-      }
-      fetch('/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(register)
-      }). 
-      then(response => response.json()).
-      
-      catch(error => {
+    fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(register)
+    })
+    .then(response => response.text())
+    .then(message => {
+        const successBox = document.getElementById('successBox');
+        successBox.style.display = 'block';
+        document.getElementById('successMessage').textContent = message;
+        document.getElementById('regForm').reset();
+    })
+    .catch(error => {
         const errorBox = document.getElementById('formError');
         errorBox.textContent = 'An error occurred. Please try again later.';
         errorBox.style.display = 'block';
-      });
     });
-  </script>
+});
+</script>
+
 </body>
 </html>
