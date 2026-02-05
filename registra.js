@@ -1,13 +1,14 @@
 
-document.getElementById('regForm').addEventListener('submit', (event) => {
+const registra = document.getElementById('regForm');
+registra.addEventListener('submit', (event) => {
     event.preventDefault();
 
-    const fullName = document.getElementById('fullName').value.trim();
+    const username = document.getElementById('username').value.trim();
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     const passwordConfirm = document.getElementById('passwordConfirm').value;
 
-    if (!fullName || !email || !password || !passwordConfirm) {
+    if (!username || !email || !password || !passwordConfirm) {
         const errorBox = document.getElementById('formError');
         errorBox.textContent = 'Please fill in all required fields.';
         errorBox.style.display = 'block';
@@ -20,9 +21,9 @@ document.getElementById('regForm').addEventListener('submit', (event) => {
         return;
     }
 
-    const register = { username: fullName, email, password };
+    const register = { username, email, password };
 
-    fetch('/register', {
+    fetch('http://localhost:3000/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(register)
