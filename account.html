@@ -194,7 +194,7 @@ body{font-family:'Segoe UI',sans-serif;background:var(--bg);}
     <button id="logoutBtn">Logout</button>
   </div>
 
-  <!-- Main -->
+  
   <div class="main">
     <!-- Profile -->
     <div class="card">
@@ -239,7 +239,7 @@ body{font-family:'Segoe UI',sans-serif;background:var(--bg);}
 <script>
 let pendingShopping = [];
 function buyProduct(name){
-  alert(name + " added to cart (Demo)");
+  alert(name + " added to cart");
   pendingShopping.push(name); 
 }
 
@@ -282,6 +282,21 @@ overlay.addEventListener("click", ()=>{
   sidebar.classList.remove("show");
   overlay.classList.remove("show");
 });
+
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+
+  try {
+    const res = await fetch("http://localhost:3000/logout");
+    const data = await res.json();
+
+    window.location.href = data.redirect;
+
+  } catch (error) {
+    alert("Logout failed");
+  }
+
+});
+
 </script>
 
 </body>

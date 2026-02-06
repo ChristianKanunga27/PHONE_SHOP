@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Dashboard - PhoneHub</title>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
@@ -52,7 +53,7 @@ button {
 table {
     width: 100%;
     border-collapse: collapse;
-    background: var(--surface);
+    background: white;
     border-radius: var(--radius);
     overflow: hidden;
     box-shadow: var(--shadow);
@@ -66,18 +67,19 @@ th, td {
 
 th { background: var(--accent); color: white; }
 
-form input, form textarea {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0 10px;
-    border-radius: var(--radius);
-    border: 1px solid #ccc;
+.phone-img{
+    width:70px;
+    height:70px;
+    object-fit:cover;
+    border-radius:8px;
 }
+
+/* Modal */
 
 .modal {
     display: none;
     position: fixed;
-    top:0; left:0; right:0; bottom:0;
+    inset: 0;
     background: rgba(0,0,0,0.5);
     justify-content:center;
     align-items:center;
@@ -95,6 +97,12 @@ form input, form textarea {
     font-size:18px;
     cursor:pointer;
 }
+
+form input, textarea {
+    width:100%;
+    padding:8px;
+    margin:6px 0 12px;
+}
 </style>
 </head>
 <body>
@@ -102,132 +110,158 @@ form input, form textarea {
 <header>Admin Dashboard - PhoneHub</header>
 
 <div class="container">
-    <button class="add-btn" id="addPhoneBtn"><i class="fa-solid fa-plus"></i> Add New Phone</button>
 
-    <table id="phonesTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Price ($)</th>
-                <th>Description</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+<button class="add-btn" id="addPhoneBtn">
+<i class="fa-solid fa-plus"></i> Add Phone
+</button>
+
+<table id="phonesTable">
+<thead>
+<tr>
+<th>ID</th>
+<th>Image</th>
+<th>Name</th>
+<th>Price</th>
+<th>Description</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
 </div>
 
-<!-- Add/Edit Phone Modal -->
+<!-- MODAL -->
 <div class="modal" id="phoneModal">
-    <div class="modal-content">
-        <span class="close" id="closeModal">&times;</span>
-        <h3 id="modalTitle">Add Phone</h3>
-        <form id="phoneForm">
-            <input type="hidden" id="phoneId">
-            <label for="phoneName">Phone Name</label>
-            <input type="text" id="phoneName" required>
-            
-            <label for="phonePrice">Price ($)</label>
-            <input type="number" id="phonePrice" required>
-            
-            <label for="phoneDesc">Description</label>
-            <textarea id="phoneDesc" rows="3" required></textarea>
-            
-            <button type="submit" class="add-btn" id="saveBtn">Save</button>
-        </form>
-    </div>
+<div class="modal-content">
+
+<span class="close" id="closeModal">&times;</span>
+
+<h3 id="modalTitle">Add Phone</h3>
+
+<form id="phoneForm">
+
+<input type="hidden" id="phoneId">
+
+<label>Phone Name</label>
+<input type="text" id="phoneName" required>
+
+<label>Price</label>
+<input type="number" id="phonePrice" required>
+
+<label>Description</label>
+<textarea id="phoneDesc" required></textarea>
+
+<label>Phone Image</label>
+<input type="file" id="phoneImage" accept="image/*">
+
+<img id="preview" style="width:100px;display:none;margin-top:10px;">
+
+<button class="add-btn">Save</button>
+
+</form>
+</div>
 </div>
 
 <script>
-const phonesTable = document.querySelector("#phonesTable tbody");
-const phoneModal = document.getElementById("phoneModal");
-const addPhoneBtn = document.getElementById("addPhoneBtn");
-const closeModal = document.getElementById("closeModal");
-const phoneForm = document.getElementById("phoneForm");
-const modalTitle = document.getElementById("modalTitle");
-const saveBtn = document.getElementById("saveBtn");
+const table = document.querySelector("#phonesTable tbody");
+const modal = document.getElementById("phoneModal");
+const form = document.getElementById("phoneForm");
+const preview = document.getElementById("preview");
 
-let editPhoneId = null;
+let editId = null;
 
-// Open Add Modal
-addPhoneBtn.addEventListener("click", () => {
-    modalTitle.textContent = "Add Phone";
-    saveBtn.textContent = "Add";
-    phoneForm.reset();
-    editPhoneId = null;
-    phoneModal.style.display = "flex";
-});
+/* OPEN MODAL */
+addPhoneBtn.onclick = () => {
+    form.reset();
+    preview.style.display = "none";
+    editId = null;
+    modal.style.display = "flex";
+};
 
-// Close Modal
-closeModal.addEventListener("click", () => phoneModal.style.display = "none");
+closeModal.onclick = () => modal.style.display = "none";
 
-// Fetch Phones
-async function fetchPhones() {
+/* IMAGE PREVIEW */
+phoneImage.onchange = () => {
+    const file = phoneImage.files[0];
+    if(file){
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+    }
+};
+
+/* FETCH PHONES */
+async function fetchPhones(){
     const res = await fetch("http://localhost:3000/phones");
     const data = await res.json();
-    phonesTable.innerHTML = "";
 
-    data.forEach(phone => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
+    table.innerHTML = "";
+
+    data.forEach(phone=>{
+        table.innerHTML += `
+        <tr>
             <td>${phone.id}</td>
+            <td><img src="${phone.image}" class="phone-img"></td>
             <td>${phone.name}</td>
             <td>${phone.price}</td>
             <td>${phone.description}</td>
             <td>
-                <button class="edit-btn" onclick="editPhone(${phone.id})"><i class="fa-solid fa-pen"></i></button>
-                <button class="delete-btn" onclick="deletePhone(${phone.id})"><i class="fa-solid fa-trash"></i></button>
+                <button class="edit-btn" onclick="editPhone(${phone.id})"><i class="fa fa-pen"></i></button>
+                <button class="delete-btn" onclick="deletePhone(${phone.id})"><i class="fa fa-trash"></i></button>
             </td>
-        `;
-        phonesTable.appendChild(tr);
+        </tr>`;
     });
 }
 
-// Add or Update Phone
-phoneForm.addEventListener("submit", async (e) => {
+/* SAVE PHONE */
+form.onsubmit = async (e)=>{
     e.preventDefault();
-    const phoneData = {
-        name: document.getElementById("phoneName").value,
-        price: document.getElementById("phonePrice").value,
-        description: document.getElementById("phoneDesc").value
-    };
 
-    if(editPhoneId){
-   
-        await fetch(`http://localhost:3000/phones/${editPhoneId}`, {
-            method: "PUT",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify(phoneData)
+    const formData = new FormData();
+    formData.append("name", phoneName.value);
+    formData.append("price", phonePrice.value);
+    formData.append("description", phoneDesc.value);
+
+    if(phoneImage.files[0]){
+        formData.append("image", phoneImage.files[0]);
+    }
+
+    if(editId){
+        await fetch(`http://localhost:3000/phones/${editId}`,{
+            method:"PUT",
+            body:formData
         });
-    } else {
-
-        await fetch("http://localhost:3000/phones", {
-            method: "POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify(phoneData)
+    }else{
+        await fetch("http://localhost:3000/phones",{
+            method:"POST",
+            body:formData
         });
     }
 
-    phoneModal.style.display = "none";
+    modal.style.display = "none";
     fetchPhones();
-});
+};
 
+/* EDIT PHONE */
 async function editPhone(id){
     const res = await fetch(`http://localhost:3000/phones/${id}`);
     const phone = await res.json();
-    modalTitle.textContent = "Edit Phone";
-    saveBtn.textContent = "Update";
-    document.getElementById("phoneName").value = phone.name;
-    document.getElementById("phonePrice").value = phone.price;
-    document.getElementById("phoneDesc").value = phone.description;
-    editPhoneId = id;
-    phoneModal.style.display = "flex";
+
+    phoneName.value = phone.name;
+    phonePrice.value = phone.price;
+    phoneDesc.value = phone.description;
+
+    preview.src = phone.image;
+    preview.style.display = "block";
+
+    editId = id;
+    modal.style.display = "flex";
 }
 
+/* DELETE */
 async function deletePhone(id){
-    if(confirm("Are you sure you want to delete this phone?")){
-        await fetch(`http://localhost:3000/phones/${id}`, { method: "DELETE" });
+    if(confirm("Delete phone?")){
+        await fetch(`http://localhost:3000/phones/${id}`,{method:"DELETE"});
         fetchPhones();
     }
 }

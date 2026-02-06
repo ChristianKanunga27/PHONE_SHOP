@@ -42,3 +42,19 @@ registra.addEventListener('submit', (event) => {
         errorBox.style.display = 'block';
     });
 });
+
+const params = new URLSearchParams(window.location.search);
+
+const product = params.get('product');
+const price = params.get('price');
+
+if(product && price){
+
+    document.getElementById('productBox').style.display = 'block';
+    document.getElementById('productName').textContent = product;
+    document.getElementById('productPrice').textContent =
+        "TZS " + Number(price).toLocaleString();
+
+    document.getElementById('productInput').value = product;
+    document.getElementById('priceInput').value = price;
+}

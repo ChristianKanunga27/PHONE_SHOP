@@ -2,155 +2,243 @@
 
 const express = require('express');
 const mysql = require('mysql2');
-const session = require("express-session");
-
+const session = require('express-session');
+const multer = require('multer');
+const path = require('path');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
- 
- const app = express();
+const app = express();
+
+//middleware
+
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+
 app.use(session({
     secret: "phone_shop_secret",
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false
 }));
 
 
-//create the database connection to the database
-
-const db = mysql.createPool({  
-    host: 'localhost',
-    user: 'root',       
-    password: 'MyRoot123!', 
-    database: 'phone_shop', 
-
-    connectionLimit: 100,
-    waitForConnections: true,
-    queueLimit: 0,
-    port: 3306
+const storage = multer.diskStorage({
+    destination: './uploads/',
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
 });
 
+const upload = multer({ storage });
 
- //test the connection
- db.getConnection((err,connection)=>{
-    if(err){
-        console.error('Error connecting to the database:', err);
+app.use('/uploads', express.static('uploads'));
+
+//create the database connection
+
+const db = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: 'MyRoot123!',
+    database: 'phone_shop',
+    connectionLimit: 10
+});
+//test the connection
+db.getConnection((err, connection) => {
+    if (err) {
+        console.error('Database error:', err);
         return;
     }
-    console.log('Connected to the MySQL database');
+    console.log('MySQL Connected');
     connection.release();
- });
+});
 
+//root for registration
 
-
-//the root fo the registration
-app.post('/register', async (req, res) => {        
-    const { username, email, password } = req.body;
-
+app.post('/register', async (req, res) => {
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const sqlInsert = "INSERT INTO users (username, email, password) VALUES (?,?,?,'user') ";
+        const { username, email, password } = req.body;
 
-        db.query(sqlInsert, [username, email, hashedPassword], (err, result) => {
-            if (err) {
-                console.error('Error inserting data:', err);
-                return res.status(500).send('Error registering user');
-            }
-            res.status(200).send('User registered successfully');
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const sql = `
+            INSERT INTO users (username, email, password, role)
+            VALUES (?, ?, ?, 'user')
+        `;
+
+        db.query(sql, [username, email, hashedPassword], (err) => {
+            if (err) return res.status(500).json({ message: 'Registration failed' });
+
+            res.json({ message: 'User registered successfully' });
         });
+
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
+        res.status(500).json({ message: 'Server error' });
     }
 });
 
-// THE ROOT FOR THE LOGIN FORM
-app.post('/login', async (req, res) => {
+//route for login
+
+app.post('/login', (req, res) => {
+
     const { email, password } = req.body;
 
     const sql = 'SELECT * FROM users WHERE email = ?';
+
     db.query(sql, [email], async (err, result) => {
+
         if (err) return res.status(500).json({ message: 'Server error' });
-        if (result.length === 0) return res.status(401).json({ message: 'User not found' });
+
+        if (result.length === 0)
+            return res.status(401).json({ message: 'User not found' });
 
         const user = result[0];
+
         const match = await bcrypt.compare(password, user.password);
 
-        if (!match) return res.status(401).json({ message: 'Wrong password' });
+        if (!match)
+            return res.status(401).json({ message: 'Wrong password' });
 
-        req.session.user = {
-            id: user.id,
-            email: user.email,
-            role: user.role
-        };
+        req.session.user = user;
 
-         if (user.role === 'admin') {
-            res.json({
-                message: 'Login successful',
-                redirect: 'admin.html'  
-            });
+        // Role Redirect 
+        if (user.role === 'admin') {
+            res.json({ redirect: 'admin.html' });
         } else {
-            res.json({
-                message: 'Login successful',
-                redirect: 'account.html'
-            });
+            res.json({ redirect: 'account.html' });
+        }
+
     });
 });
 
-//get all phones 
+        //get all phones 
 
-app.get('/phones', (req,res)=>{
-    db.query("SELECT * FROM phones_list", (err, result)=>{
-        if(err) return res.status(500).send(err);
+app.get('/phones', (req, res) => {
+
+    db.query("SELECT * FROM phones_list", (err, result) => {
+        if (err) return res.status(500).send(err);
+
         res.json(result);
     });
+
 });
  
-// get single phone by id
+app.get('/phones/:id', (req, res) => {
 
 app.get('/phones/:id', (req,res)=>{
     const id = req.params.id;
-    db.query("SELECT * FROM phones_list WHERE id=?", [id], (err,result)=>{
+
+    db.query(
+        "SELECT * FROM phones_list WHERE id=?",
+        [id],
+        (err, result) => {
+            if (err) return res.status(500).send(err);
+
+            res.json(result[0]);
+        }
+    );
+});
+
+});
+
+ 
+
+app.post('/phones', upload.single('image'), (req,res)=>{
+    const {name, price, description} = req.body;
+
+    const image = req.file
+        ? '/uploads/' + req.file.filename
+        : null;
+
+    const sql = "INSERT INTO phones_list (name, price, description, image) VALUES (?,?,?,?)";
+
+    db.query(sql,[name,price,description,image],(err)=>{
         if(err) return res.status(500).send(err);
-        res.json(result[0]);
+
+        res.send("Phone added successfully");
     });
 });
 
-// add phone
+ 
 
-app.post('/phones', (req,res)=>{
-    const {name, price, description} = req.body;
-    db.query("INSERT INTO phones_list (name, price, description) VALUES (?,?,?)", 
-        [name, price, description], (err,result)=>{
-            if(err) return res.status(500).send(err);
-            res.json({message:"Phone added"});
-        });
+app.put('/phones/:id', upload.single('image'), (req, res) => {
+
+
+    
+    const id = req.params.id;
+    const { name, brand, price, description } = req.body;
+
+    const image = req.file 
+        ? '/uploads/' + req.file.filename 
+        : null;
+
+    let sql;
+    let values;
+
+    if (image) {
+
+        sql = `
+            UPDATE phones_list 
+            SET name=?, brand=?, price=?, description=?, image=? 
+            WHERE id=?
+        `;
+
+        values = [name, brand, price, description, image, id];
+
+    } else {
+
+        sql = `
+            UPDATE phones_list 
+            SET name=?, brand=?, price=?, description=? 
+            WHERE id=?
+        `;
+
+        values = [name, brand, price, description, id];
+    }
+
+    db.query(sql, values, (err) => {
+
+        if (err) {
+            console.error(err);
+            return res.status(500).send(err);
+        }
+
+        res.json({ message: 'Phone updated successfully' });
+
+    });
+
 });
 
 
-//update phone
 
-app.put('/phones/:id', (req,res)=>{
+
+app.delete('/phones/:id', (req, res) => {
+
     const id = req.params.id;
-    const {name, price, description} = req.body;
-    db.query("UPDATE phones_list SET name=?, price=?, description=? WHERE id=?", 
-        [name, price, description, id], (err,result)=>{
-            if(err) return res.status(500).send(err);
-            res.json({message:"Phone updated"});
-        });
+
+    db.query("DELETE FROM phones_list WHERE id=?", [id], (err) => {
+
+        if (err) return res.status(500).send(err);
+
+        res.json({ message: 'Phone deleted successfully' });
+
+    });
+
 });
 
-//delete phone
+app.get('/logout', (req, res) => {
 
-app.delete('/phones/:id', (req,res)=>{
-    const id = req.params.id;
-    db.query("DELETE FROM phones_list WHERE id=?", [id], (err,result)=>{
-        if(err) return res.status(500).send(err);
-        res.json({message:"Phone deleted"});
+    req.session.destroy((err) => {
+
+        if (err) {
+            return res.status(500).send("Logout failed");
+        }
+
+        res.clearCookie('connect.sid');  
+        res.json({ redirect: "home.html" });
+
     });
 });
 
@@ -158,6 +246,6 @@ app.delete('/phones/:id', (req,res)=>{
 
 const port = 3000;
 
-app.listen(port,()=>{
-    console.log('Now server is running at port ' + port);
+app.listen(port, () => {
+    console.log(`Server now is running on port ${port}`);
 });

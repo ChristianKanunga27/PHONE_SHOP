@@ -6,7 +6,6 @@
         menuToggle.addEventListener('click', () => {
             navMenu.classList.toggle('active');
         });
-
         
         document.querySelectorAll('nav a').forEach(link => {
             link.addEventListener('click', () => {
@@ -207,3 +206,45 @@
                 openLoginModal(params.get('email'));
             }
         })();
+
+        async function loadPhones() {
+    try {
+
+        const response = await fetch('http://localhost:3000/phones');
+        const phones = await response.json();
+
+        const container = document.getElementById('phoneContainer');
+
+        container.innerHTML = '';
+
+        phones.forEach(phone => {
+
+            const card = document.createElement('div');
+            card.className = 'collection-card';
+
+            card.innerHTML = `
+                <div class="collection-image">
+                    <img src="http://localhost:3000${phone.image}" alt="${phone.name}">
+                </div>
+
+                <div class="collection-info">
+                    <h3>${phone.name}</h3>
+                    <p class="collection-price">TZS ${Number(phone.price).toLocaleString()}</p>
+                    <p>${phone.description || ''}</p>
+
+                    <button class="collection-btn"
+                        onclick="window.location.href='registra.html?product=${encodeURIComponent(phone.name)}&price=${phone.price}'">
+                        Buy Now
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+
+    } catch(error){
+        console.error('Error loading phones:', error);
+    }
+}
+
+loadPhones();
