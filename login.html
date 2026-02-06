@@ -1,211 +1,217 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login - PhoneHub</title>
-  <style>
-     
-    :root {
-      --accent: #FF9500;            
-      --accent-contrast: #ffffff;  
-      --bg: #F3F4F6;              
-      --surface: #ffffff;         
-      --text: #1F2937;            
-      --muted: #6B7280;           
-      --error: #D14343;          
-      --success-bg: #ECFDF5;       
-      --success-border: #A7F3D0;    
-      --radius: 8px;              
-      --shadow: 0 10px 30px rgba(0,0,0,0.06);
-      --focus: rgba(255,149,0,0.12);  
-    }
- 
-    * { box-sizing: border-box; }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login - PhoneHub</title>
 
-    body {
-      margin: 0;
-      padding: 32px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
-    }
-    
-    .card {
-      max-width: 480px;         
-      margin: 0 auto;
-      background: var(--surface);
-      padding: 20px;
-      border-radius: calc(var(--radius) + 4px);
-      box-shadow: var(--shadow);
-    }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    h1 { margin: 0 0 12px; font-size: 20px; }
+<style>
+:root{
+  --accent:#FF9500;
+  --surface:#ffffff;
+  --text:#1F2937;
+  --muted:#6B7280;
+  --error:#D14343;
+  --radius:10px;
+  --shadow:0 12px 35px rgba(0,0,0,0.08);
+  --focus:rgba(255,149,0,0.2);
+}
 
-    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+*{box-sizing:border-box;margin:0;padding:0;}
 
-    input[type="email"],
-    input[type="password"] {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #E5E7EB;
-      border-radius: var(--radius);
-      margin-bottom: 10px;
-      font-size: 14px;
-      background: #fff;
-      transition: box-shadow 120ms ease, border-color 120ms ease;
-    }
+body{
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,blue,white);
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 
-    input:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 4px var(--focus);
-    }
- 
-    .row { display: flex; gap: 8px; align-items: center; }
-    .actions { display: flex; gap: 10px; margin-top: 8px; }
- 
-    .btn {
-      background: var(--accent);
-      color: var(--accent-contrast);
-      border: none;
-      padding: 10px 14px;
-      border-radius: calc(var(--radius) + 4px);
-      font-weight: 700;
-      cursor: pointer;
-    }
+.card{
+  width:100%;
+  max-width:420px;
+  background:var(--surface);
+  padding:30px;
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  text-align:center;
+}
 
-    .btn:focus { outline: 2px solid rgba(0,0,0,0.06); outline-offset: 2px; }
+#one{
+  font-size:26px;
+  font-weight:bold;
+  color:green;
+  margin-bottom:20px;
+}
 
-    .secondary {
-      background: transparent;
-      border: 2px solid #E5E7EB;
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: calc(var(--radius) + 4px);
-    }
+.form-group{
+  margin-bottom:18px;
+  text-align:left;
+}
 
-    .show-hide {
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      color: var(--muted);
-      padding: 6px;
-    }
- 
-    .help { font-size: 13px; color: var(--muted); margin-top: 10px; }
-    .error { color: var(--error); font-size: 13px; margin-top: 8px; display: none; }
-    .success { background: var(--success-bg); border: 1px solid var(--success-border); padding: 8px; border-radius: 6px; color: #065F46; display: none; margin-top: 10px; }
+label{
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:6px;
+  display:block;
+}
 
-    
-    @media (max-width: 520px) {
-      body { padding: 16px; }
-      .card { padding: 16px; }
-    }
- 
-  </style>
+.input-wrapper{
+  position:relative;
+}
+
+input{
+  width:100%;
+  padding:12px 40px 12px 12px;
+  border:1px solid #E5E7EB;
+  border-radius:var(--radius);
+}
+
+.toggle-password{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+  border:none;
+  background:none;
+  cursor:pointer;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:15px;
+}
+
+.btn{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:var(--radius);
+  background:var(--accent);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.secondary{
+  flex:1;
+  padding:12px;
+  border-radius:var(--radius);
+  border:2px solid #E5E7EB;
+  background:white;
+  cursor:pointer;
+}
+
+.error{
+  color:var(--error);
+  font-size:13px;
+  margin-top:12px;
+  display:none;
+}
+</style>
 </head>
+
 <body>
-  <div class="card">
-    <h1>Login</h1>
 
-    <div id="info" class="help" style="display:none"></div>
+<div class="card">
 
-    <form id="loginForm" novalidate>
-      <div>
-        <label for="email">Email</label>
-        <input id="email" type="email" required placeholder="you@example.com">
-      </div>
+<h2 id="one">WELCOME BACK TO CIA_PHONE SHOP</h2>
+<h1>Login</h1>
 
-      <div>
-        <label for="password">Password</label>
-        <div class="row">
-          <input id="password" type="password" required placeholder="Your password">
-          <button type="button" id="togglePwd" class="show-hide" aria-label="Show password">Show</button>
-        </div>
-      </div>
+<form id="loginForm" novalidate>
 
-      <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
-        <input id="remember" type="checkbox">
-        <label for="remember" style="margin:0;font-size:13px;color:var(--muted)">Remember my email</label>
-      </div>
+<div class="form-group">
+  <label for="email">Email</label>
+  <input id="email" type="email" name="email" required>
+</div>
 
-      <div class="actions">
-        <button type="submit" class="btn">Login</button>
-        <button type="button" class="secondary" onclick="location.href='registra.html'">Register</button>
-      </div>
+<div class="form-group input-wrapper">
+  <label for="password">Password</label>
+  <input id="password" type="password" name="password" required>
 
-      <div style="margin-top:10px">
-        <a href="#" id="forgot">Forgot password?</a>
-      </div>
+  <button type="button" class="toggle-password" id="togglePwd" aria-label="Toggle password">
+    <i class="fa-solid fa-eye"></i>
+  </button>
+</div>
 
-      <div id="error" class="error" role="alert"></div>
-      <div id="success" class="success"></div>
-    </form>
-  </div>
+<div class="actions">
+  <button class="btn" type="submit">Login</button>
+  <button type="button" class="secondary" onclick="location.href='registra.html'">Register</button>
+</div>
 
-  <script>
+<div id="error" class="error"></div>
 
-    function getParam(name) { return new URLSearchParams(window.location.search).get(name); }
+</form>
+</div>
 
-    function showError(msg) { const e = document.getElementById('error'); e.textContent = msg; e.style.display = 'block'; }
-    function clearError() { const e = document.getElementById('error'); e.textContent = ''; e.style.display = 'none'; }
- 
-    (function() {
-      const pref = getParam('email');
-      const remembered = localStorage.getItem('rememberedEmail');
-      if (pref) {
-        document.getElementById('email').value = decodeURIComponent(pref);
-        document.getElementById('info').textContent = 'Email pre-filled from previous step.';
-        document.getElementById('info').style.display = 'block';
-      } else if (remembered) {
-        document.getElementById('email').value = remembered;
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  // Toggle password visibility
+  const toggleBtn = document.getElementById("togglePwd");
+  const passwordInput = document.getElementById("password");
+  if(toggleBtn && passwordInput){
+    const eyeIcon = toggleBtn.querySelector("i");
+    toggleBtn.addEventListener("click", () => {
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
+      eyeIcon.classList.toggle("fa-eye");
+      eyeIcon.classList.toggle("fa-eye-slash");
+    });
+  }
+
+  // Login form submit
+  const form = document.getElementById("loginForm");
+  const errorBox = document.getElementById("error");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    errorBox.style.display = "none";
+
+    if(!email || !password){
+      errorBox.textContent = "Please fill all fields.";
+      errorBox.style.display = "block";
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({email, password})
+      });
+
+      const data = await res.json();
+
+      if(!res.ok){
+        errorBox.textContent = data.message || "Login failed";
+        errorBox.style.display = "block";
+        return;
       }
-    })();
 
-    document.getElementById('togglePwd').addEventListener('click', function(){
-      const pwd = document.getElementById('password');
-      if (pwd.type === 'password') { pwd.type = 'text'; this.textContent = 'Hide'; this.setAttribute('aria-label','Hide password'); }
-      else { pwd.type = 'password'; this.textContent = 'Show'; this.setAttribute('aria-label','Show password'); }
-    });
-
-    document.getElementById('forgot').addEventListener('click', function(e){
-      e.preventDefault();
-      const email = document.getElementById('email').value.trim();
-      if (!email) { showError('Enter your email first to reset password.'); return; }
-      clearError();
-      document.getElementById('success').textContent = 'If this email is registered, a password reset link has been sent (simulated).';
-      document.getElementById('success').style.display = 'block';
-      setTimeout(()=>{ document.getElementById('success').style.display = 'none'; }, 4000);
-    });
-
-    document.getElementById('loginForm').addEventListener('submit', function(e){
-      e.preventDefault(); clearError();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const remember = document.getElementById('remember').checked;
-
-      if (!email || !password) { showError('Please enter email and password.'); return; }
-
-      let users = [];
-      try { users = JSON.parse(localStorage.getItem('users') || '[]'); } catch (err) { users = []; }
-
-      const user = users.find(u => u.email === email);
-      if (!user) { showError('No account found with this email. Please register.'); return; }
-      if (user.password !== password) { showError('Incorrect password.'); return; }
-
-      if (remember) {
-        localStorage.setItem('rememberedEmail', email);
+      // Redirect based on role from backend
+      if(data.redirect){
+        window.location.href = data.redirect;
       } else {
-        localStorage.removeItem('rememberedEmail');
+        window.location.href = "account.html"; 
       }
 
-      localStorage.setItem('currentUser', JSON.stringify({ email: user.email, name: user.name }));
+    } catch(err){
+      errorBox.textContent = "Server connection failed.";
+      errorBox.style.display = "block";
+    }
+  });
 
-      window.location.href = 'account.html';
-    });
-  </script>
+});
+</script>
+
 </body>
 </html>

@@ -1,120 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Account - PhoneHub</title>
-  <style>
-     
-    :root {
-      --accent: #FF9500;
-      --bg: #F3F4F6;
-      --surface: #ffffff;
-      --text: #1F2937;
-      --muted: #6B7280;
-      --radius: 12px;
-      --shadow: 0 10px 30px rgba(0,0,0,0.06);
-    }
- 
-    * { box-sizing: border-box; }
- 
-    body {
-      margin: 0;
-      padding: 32px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Account - PhoneHub</title>
+<style>
+:root{
+  --accent:#FF9500;
+  --bg:#F3F4F6;
+  --surface:#ffffff;
+  --text:#1F2937;
+  --radius:12px;
+  --shadow:0 10px 25px rgba(0,0,0,0.05);
+}
 
-    .wrap { max-width: 980px; margin: 0 auto; }
- 
-    .card {
-      background: var(--surface);
-      padding: 20px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
- 
-    .row { display: flex; gap: 20px; }
-    .col { flex: 1; }
- 
-    h1 { margin: 0 0 18px; }
-    .small { color: var(--muted); font-size: 14px; }
- 
-    .btn {
-      background: var(--accent);
-      color: #fff;
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-weight: 700;
-    }
-    .btn:focus { outline: 3px solid rgba(255,149,0,0.12); outline-offset: 2px; }
- 
-    .link {
-      background: transparent;
-      border: 2px solid #E5E7EB;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
- 
-    .profile { display: flex; align-items: center; gap: 12px; }
-    .avatar {
-      width: 64px; height: 64px;
-      border-radius: 12px; background: #F1F5F9;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; color: var(--muted);
-    }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg);}
 
-    .section { margin-top: 16px; }
- 
-    @media (max-width: 800px) {
-      .row { flex-direction: column; }
-    }
-  
-  </style>
+.dashboard{
+  display:flex;
+  min-height:100vh;
+}
+
+/* Sidebar */
+.sidebar{
+  width:230px;
+  background:#111827;
+  color:white;
+  padding:20px;
+  flex-shrink:0;
+  transition: transform 0.3s ease;
+}
+
+.sidebar h2{margin-bottom:25px;font-size:22px;}
+.sidebar button{
+  width:100%;
+  padding:12px;
+  border:none;
+  background:none;
+  color:white;
+  text-align:left;
+  cursor:pointer;
+  border-radius:8px;
+  margin-bottom:8px;
+  font-size:15px;
+}
+.sidebar button:hover{background:rgba(255,255,255,0.1);}
+
+/* Overlay for mobile */
+.overlay{
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.5);
+  z-index:9;
+}
+
+/* Hamburger button */
+.hamburger{
+  display:none;
+  position:fixed;
+  top:15px;
+  left:15px;
+  font-size:28px;
+  color:var(--accent);
+  background:none;
+  border:none;
+  cursor:pointer;
+  z-index:11;
+}
+
+/* Main content */
+.main{
+  flex:1;
+  padding:30px;
+  min-width:280px;
+  transition: margin-left 0.3s ease;
+}
+
+/* Cards */
+.card{
+  background:white;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:20px;
+  margin-bottom:20px;
+}
+
+/* Profile */
+.profile{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+}
+.avatar{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  background:#E5E7EB;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  font-weight:bold;
+}
+
+/* Products */
+.products{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+}
+.product{
+  border:1px solid #eee;
+  border-radius:10px;
+  padding:15px;
+  text-align:center;
+  transition:0.3s;
+}
+.product:hover{
+  transform:translateY(-5px);
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+.product img{
+  width:100%;
+  height:160px;
+  object-fit:cover;
+  border-radius:8px;
+}
+.product h4{margin:10px 0 5px;font-size:16px;}
+.price{color:var(--accent);font-weight:bold;margin-bottom:10px;}
+.btn{
+  background:var(--accent);
+  color:white;
+  border:none;
+  padding:10px 15px;
+  border-radius:8px;
+  cursor:pointer;
+  width:100%;
+  transition:0.2s;
+}
+.btn:hover{opacity:0.9;}
+
+/* Pending shopping list */
+.pending-list{margin-top:15px;padding-left:20px;}
+.pending-item{margin-bottom:8px;font-weight:500;color:#1F2937;}
+
+/* Responsive */
+@media(max-width:900px){
+  .hamburger{display:block;}
+  .sidebar{
+    position:fixed;
+    top:0;
+    left:0;
+    height:100%;
+    transform:translateX(-100%);
+    z-index:10;
+    box-shadow:5px 0 15px rgba(0,0,0,0.2);
+  }
+  .sidebar.show{
+    transform:translateX(0);
+  }
+  .overlay.show{
+    display:block;
+  }
+  .main{padding:20px;}
+}
+
+@media(max-width:500px){
+  .products{grid-template-columns:1fr;}
+  .profile{flex-direction:column;align-items:center;text-align:center;}
+  .avatar{margin-bottom:10px;}
+}
+</style>
 </head>
 <body>
-  <div class="wrap">
+
+<!-- Hamburger for mobile -->
+<button class="hamburger" id="hamburger">&#9776;</button>
+<div class="overlay" id="overlay"></div>
+
+<div class="dashboard">
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <h2>PhoneHub</h2>
+    <button>Dashboard</button>
+    <button id="pendingBtn">See Pending Shopping</button>
+    <button>Orders</button>
+    <button id="logoutBtn">Logout</button>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Profile -->
     <div class="card">
-      <h1>Your Account</h1>
-      <div id="welcome" class="small">Loading...</div>
-
-      <div class="section">
-        <div class="profile">
-          <div class="avatar" id="avatar">U</div>
-          <div>
-            <div id="displayName" style="font-weight:700">Name</div>
-            <div id="displayEmail" class="small">email@example.com</div>
-          </div>
-        </div>
-
-        <div style="margin-top:14px">
-          <button id="logoutBtn" class="btn">Logout</button>
-          <button id="goHome" class="link" style="margin-left:10px" onclick="location.href='home.html'">Go to Home</button>
+      <div class="profile">
+        <div class="avatar" id="avatar">U</div>
+        <div>
+          <h2 id="displayName">User Name</h2>
+          <p id="displayEmail">email@example.com</p>
         </div>
       </div>
+    </div>
 
-      <div class="section">
-        <h3>Orders</h3>
-        <p class="small">You have no orders yet. Orders will appear here after checkout (demo).</p>
-      </div>
-
-      <div class="section">
-        <h3>Account settings</h3>
-        <p class="small">Change your display name below (changes saved in localStorage).</p>
-        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
-          <input id="editName" placeholder="Your name" style="padding:8px;border-radius:8px;border:1px solid #E5E7EB;flex:1">
-          <button id="saveName" class="btn">Save</button>
+    <!-- Shop Section -->
+    <div class="card">
+      <h3>🔥 Shop Phones</h3>
+      <div class="products">
+        <div class="product">
+          <img src="I phone11.png" />
+          <h4>iPhone 11</h4>
+          <div class="price">$900</div>
+          <button class="btn" onclick="buyProduct('iPhone 11')">Buy Now</button>
+        </div>
+        <div class="product">
+          <img src="I phone11.png" />
+          <h4>iPhone 11</h4>
+          <div class="price">$850</div>
+          <button class="btn" onclick="buyProduct('iPhone 11')">Buy Now</button>
+        </div>
+        <div class="product">
+          <img src="i phone 17 pro.jpeg" />
+          <h4>iPhone 17 Pro</h4>
+          <div class="price">$300</div>
+          <button class="btn" onclick="buyProduct('iPhone 17 Pro')">Buy Now</button>
         </div>
         <div id="saveMsg" class="small" style="margin-top:8px;color:green;display:none">Saved.</div>
       </div>
-
+      <ul id="pendingList" class="pending-list" style="display:none"></ul>
     </div>
   </div>
+</div>
 
-  <script src="account.js"></script>
+<script>
+let pendingShopping = [];
+function buyProduct(name){
+  alert(name + " added to cart (Demo)");
+  pendingShopping.push(name); 
+}
+
+document.getElementById("pendingBtn").addEventListener("click", () => {
+  const list = document.getElementById("pendingList");
+  const btn = document.getElementById("pendingBtn");
+  if(list.style.display === "none"){
+    list.innerHTML = "";
+    if(pendingShopping.length === 0){
+      const li = document.createElement("li");
+      li.textContent = "No pending shopping yet.";
+      li.className = "pending-item";
+      list.appendChild(li);
+    } else {
+      pendingShopping.forEach(item=>{
+        const li=document.createElement("li");
+        li.textContent=item;
+        li.className="pending-item";
+        list.appendChild(li);
+      });
+    }
+    list.style.display="block";
+    btn.textContent="Hide Pending Shopping";
+  } else {
+    list.style.display="none";
+    btn.textContent="See Pending Shopping";
+  }
+});
+
+const hamburger = document.getElementById("hamburger");
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+
+hamburger.addEventListener("click", ()=>{
+  sidebar.classList.add("show");
+  overlay.classList.add("show");
+});
+
+overlay.addEventListener("click", ()=>{
+  sidebar.classList.remove("show");
+  overlay.classList.remove("show");
+});
+</script>
+
 </body>
 </html>

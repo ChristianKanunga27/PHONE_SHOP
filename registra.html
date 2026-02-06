@@ -9,7 +9,7 @@
     :root {
       --accent: #FF9500;
       --accent-contrast: #ffffff;
-      --bg: #F3F4F6;
+      --bg: blue;
       --surface: #ffffff;
       --muted: #6B7280;
       --text: #1F2937;
@@ -39,6 +39,15 @@
       padding: 24px;
       box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
     }
+
+    .welcome-title{
+     text-align: center;
+     font-size: 26px;
+     font-weight: bold;
+     color: green;
+     margin-bottom: 15px;
+}
+
 
     h1 {
       margin: 0 0 16px;
@@ -112,7 +121,9 @@
 </head>
 <body>
   <div class="container">
-    <h1>Register & Checkout</h1>
+  <div class="welcome-title">Welcome in CIA_Phone Shop</div>
+  <h1>Create Your Account her!</h1>
+
 
     <div id="productBox" class="product-summary" style="display:none">
       <div><strong id="productName">Product name</strong></div>
@@ -127,7 +138,7 @@
         </div>
         <div class="col">
           <label for="phone">Phone</label>
-          <input id="phone" name="phone" required placeholder="+255 7xx xxx xxx">
+          <input id="phone" name="phone" required placeholder="+255 7xx xxx xxx" required>
         </div>
       </div>
 

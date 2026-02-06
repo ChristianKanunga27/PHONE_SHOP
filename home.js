@@ -57,7 +57,7 @@
                 'phone1.png'
             ];
 
-            // matching price for each image above (USD whole numbers)
+           
             const additionalPrices = [
                 499, 299, 899, 199, 699, 129, 399, 549, 799, 1099, 259, 499
             ];
@@ -105,6 +105,7 @@
             }
 
             moreBtn.addEventListener('click', function() {
+
                 // multiple clicks allowed: each click adds 3 new unique cards
                 moreBtn.disabled = true;
                 const labelSpan = moreBtn.querySelector('span:nth-child(2)');
@@ -163,7 +164,7 @@
             const err = document.getElementById('loginError'); err.style.display='none'; err.textContent='';
             if(!email || !pwd) { err.textContent='Please enter email and password.'; err.style.display='block'; return; }
 
-            // check users saved in localStorage (demo only)
+            
             let users = [];
             try { users = JSON.parse(localStorage.getItem('users') || '[]'); } catch (e) { users = []; }
             const user = users.find(u => u.email === email);
@@ -171,16 +172,17 @@
             if (user.password !== pwd) { err.textContent = 'Incorrect password.'; err.style.display = 'block'; return; }
 
             // success: set currentUser and redirect to account page
+
             localStorage.setItem('currentUser', JSON.stringify({ email: user.email, name: user.name }));
             closeLoginModal();
             window.location.href = 'account.html';
         }
 
-        // Ensure promo video plays; if autoplay is blocked, replace it with the poster image
+        
         (function(){
             const vid = document.querySelector('#video-ad video');
             if(vid){
-                // try to play; if rejected, replace with poster image to avoid showing play overlay
+                
                 const playPromise = vid.play();
                 if(playPromise !== undefined){
                     playPromise.catch(() => {
@@ -194,12 +196,12 @@
                             img.style.borderRadius = '10px';
                             img.setAttribute('aria-hidden','false');
                             vid.parentElement.appendChild(img);
-                        } catch(e){ /* ignore */ }
+                        } catch(e){  }
                     });
                 }
             }
 
-            // If URL contains showLogin=1, open modal and prefill email if provided
+            
             const params = new URLSearchParams(window.location.search);
             if(params.get('showLogin')){
                 openLoginModal(params.get('email'));

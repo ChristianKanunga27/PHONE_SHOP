@@ -4,11 +4,12 @@ registra.addEventListener('submit', (event) => {
     event.preventDefault();
 
     const username = document.getElementById('username').value.trim();
+    const phone = document.getElementById('phone').value.trim();
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     const passwordConfirm = document.getElementById('passwordConfirm').value;
 
-    if (!username || !email || !password || !passwordConfirm) {
+    if (!username || !email || !password || !passwordConfirm || !phone) {
         const errorBox = document.getElementById('formError');
         errorBox.textContent = 'Please fill in all required fields.';
         errorBox.style.display = 'block';
