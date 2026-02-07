@@ -113,7 +113,7 @@ app.post('/login', (req, res) => {
     });
 });
 
-        //get all phones 
+     //get all phones 
 
 app.get('/phones', (req, res) => {
 
@@ -242,10 +242,45 @@ app.get('/logout', (req, res) => {
     });
 });
 
+//route for orders
+
+app.post('/buy-phone', (req, res) => {
+
+    const { customer_name, phone_number, phone_id, phone_name, price } = req.body;
+
+    const sql = `
+    INSERT INTO orders (customer_name, phone_number, phone_id, phone_name, price)
+    VALUES (?, ?, ?, ?, ?)
+    `;
+
+    db.query(sql, [customer_name, phone_number, phone_id, phone_name, price], (err) => {
+        if (err) {
+            return res.status(500).json({ message: "Failed to save order" });
+        }
+
+        res.json({ message: "Order placed successfully" });
+    });
+});
+
+app.get('/orders', (req,res)=>{
+
+    const sql = "SELECT * FROM orders ORDER BY id DESC";
+
+    db.query(sql,(err,result)=>{
+        if(err){
+            return res.status(500).json({message:"Error loading orders"});
+        }
+
+        res.json(result);
+    });
+});
+
+
 
 
 const port = 3000;
 
 app.listen(port, () => {
+
     console.log(`Server now is running on port ${port}`);
 });
