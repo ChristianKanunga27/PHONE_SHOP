@@ -14,7 +14,8 @@ const bcrypt = require('bcrypt');
 const app = express();
 
 
-//middleware
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
  // Serve frontend files
  
@@ -57,7 +58,7 @@ const db = mysql.createPool({
 
 console.log("Database Pool Ready &  DATABASE CONNECTION SUCCESSFUL");
 
-// Serve home.html on root
+// Serve .html on root
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'home.html'));
 });
