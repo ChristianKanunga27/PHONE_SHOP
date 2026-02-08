@@ -57,6 +57,12 @@ const db = mysql.createPool({
 
 console.log("Database Pool Ready &  DATABASE CONNECTION SUCCESSFUL");
 
+// Serve home.html on root
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'home.html'));
+});
+
+
 //register root route
 
 app.post('/register', async (req, res) => {
