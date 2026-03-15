@@ -210,7 +210,7 @@
         async function loadPhones() {
     try {
 
-        const response = await fetch('http://localhost:3000/phones');
+        const response = await fetch('/phones');
         const phones = await response.json();
 
         const container = document.getElementById('phoneContainer');
@@ -224,7 +224,7 @@
 
             card.innerHTML = `
                 <div class="collection-image">
-                    <img src="http://localhost:3000${phone.image}" alt="${phone.name}">
+                    <img src="${phone.image}" alt="${phone.name}">
                 </div>
 
                 <div class="collection-info">

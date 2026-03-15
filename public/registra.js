@@ -24,7 +24,7 @@ registra.addEventListener('submit', (event) => {
 
     const register = { username, email, password };
 
-    fetch('http://localhost:3000/register', {
+    fetch('/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(register)

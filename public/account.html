@@ -211,7 +211,7 @@ const productsDiv=document.getElementById("products");
 
 async function loadPhones(){
 
-const res=await fetch("http://localhost:3000/phones");
+const res=await fetch("/phones");
 const phones=await res.json();
 
 productsDiv.innerHTML="";
@@ -242,7 +242,7 @@ alert("All fields required");
 return;
 }
 
-await fetch("http://localhost:3000/buy-phone",{
+await fetch("/buy-phone",{
 method:"POST",
 headers:{
 "Content-Type":"application/json"
@@ -261,7 +261,7 @@ alert("✅ Order placed successfully");
 }
 
 logoutBtn.onclick=async()=>{
-const res=await fetch("http://localhost:3000/logout");
+const res=await fetch("/logout");
 const data=await res.json();
 window.location.href=data.redirect;
 };

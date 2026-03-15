@@ -17,8 +17,8 @@ const app = express();
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
- // Serve frontend files
- 
+// Serve frontend files
+// allow the server to read the front_end files
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use(express.json());
@@ -72,7 +72,7 @@ app.post('/register', async (req, res) => {
 
         const { username, email, password } = req.body;
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 20);
 
         await db.query(
             "INSERT INTO users (username,email,password,role) VALUES (?,?,?,'user')",

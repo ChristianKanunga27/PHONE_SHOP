@@ -396,7 +396,7 @@ preview.style.display="block";
 /* FETCH PHONES */
 async function fetchPhones(){
 
-const res=await fetch("http://localhost:3000/phones");
+const res=await fetch("/phones");
 const phones=await res.json();
 
 phonesTable.innerHTML="";
@@ -431,12 +431,12 @@ formData.append("image",phoneImage.files[0]);
 }
 
 if(editId){
-await fetch(`http://localhost:3000/phones/${editId}`,{
+await fetch(`/phones/${editId}`,{
 method:"PUT",
 body:formData
 });
 }else{
-await fetch("http://localhost:3000/phones",{
+await fetch("/phones",{
 method:"POST",
 body:formData
 });
@@ -449,7 +449,7 @@ fetchPhones();
 /* EDIT */
 async function editPhone(id){
 
-const res=await fetch(`http://localhost:3000/phones/${id}`);
+const res=await fetch(`/phones/${id}`);
 const phone=await res.json();
 
 phoneName.value=phone.name;
@@ -466,7 +466,7 @@ modal.style.display="flex";
 /* DELETE */
 async function deletePhone(id){
 if(confirm("Delete phone?")){
-await fetch(`http://localhost:3000/phones/${id}`,{method:"DELETE"});
+await fetch(`/phones/${id}`,{method:"DELETE"});
 fetchPhones();
 }
 }
@@ -474,7 +474,7 @@ fetchPhones();
 /* FETCH ORDERS */
 async function fetchOrders(){
 
-const res=await fetch("http://localhost:3000/orders");
+const res=await fetch("/orders");
 const orders=await res.json();
 
 ordersTable.innerHTML="";
