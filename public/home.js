@@ -157,24 +157,41 @@
             document.getElementById('modalEmail').value=''; document.getElementById('modalPassword').value=''; document.getElementById('loginError').style.display='none';
         }
 
-        function submitLoginFromModal(){
+async function submitLoginFromModal(){
             const email = document.getElementById('modalEmail').value.trim();
             const pwd = document.getElementById('modalPassword').value;
             const err = document.getElementById('loginError'); err.style.display='none'; err.textContent='';
             if(!email || !pwd) { err.textContent='Please enter email and password.'; err.style.display='block'; return; }
 
-            
-            let users = [];
-            try { users = JSON.parse(localStorage.getItem('users') || '[]'); } catch (e) { users = []; }
-            const user = users.find(u => u.email === email);
-            if (!user) { err.textContent = 'No account found with this email.'; err.style.display = 'block'; return; }
-            if (user.password !== pwd) { err.textContent = 'Incorrect password.'; err.style.display = 'block'; return; }
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password: pwd })
+                });
 
-            // success: set currentUser and redirect to account page
+                const data = await response.json();
 
-            localStorage.setItem('currentUser', JSON.stringify({ email: user.email, name: user.name }));
-            closeLoginModal();
-            window.location.href = 'account.html';
+                if (!response.ok) {
+                    err.textContent = data.message || 'Login failed';
+                    err.style.display = 'block';
+                    return;
+                }
+
+                // success: set currentUser in localStorage and redirect
+                const currentUser = {
+                    username: data.user?.username || email,
+                    email: data.user?.email || email,
+                    role: data.user?.role || 'user'
+                };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                closeLoginModal();
+                window.location.href = data.redirect || 'account.html';
+            } catch (error) {
+                console.error('Login error:', error);
+                err.textContent = 'Connection error. Please try again.';
+                err.style.display = 'block';
+            }
         }
 
         
