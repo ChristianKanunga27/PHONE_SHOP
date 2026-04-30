@@ -189,23 +189,41 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({email, password})
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseError) {
+        console.error('Login response parse error:', parseError);
+        data = null;
+      }
 
       if(!res.ok){
-        errorBox.textContent = data.message || "Login failed";
+        errorBox.textContent = data?.message || `Login failed (${res.status})`;
         errorBox.style.display = "block";
         return;
       }
 
-      // Redirect based on role from backend
-      if(data.redirect){
-        window.location.href = data.redirect;
-      } else {
-        window.location.href = "account.html"; 
+      const userData = data.user || { username: "", email, role: "user" };
+      localStorage.setItem('currentUser', JSON.stringify(userData));
+
+      try {
+        const usersList = JSON.parse(localStorage.getItem('users') || '[]');
+        const idx = usersList.findIndex(u => u.email === userData.email);
+        if (idx > -1) {
+          usersList[idx] = userData;
+        } else {
+          usersList.push(userData);
+        }
+        localStorage.setItem('users', JSON.stringify(usersList));
+      } catch (storageErr) {
+        console.warn('Could not persist users in localStorage', storageErr);
       }
 
+      window.location.href = data.redirect || "account.html"; 
+
     } catch(err){
-      errorBox.textContent = "Server connection failed.";
+      console.error('Login request failed:', err);
+      errorBox.textContent = `Server connection failed: ${err.message || 'Please try again later.'}`;
       errorBox.style.display = "block";
     }
   });

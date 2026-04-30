@@ -25,6 +25,7 @@
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
+    "mongoose": "^8.23.1",
     "multer": "^2.0.2",
     "mysql2": "^3.16.3"
   },

@@ -1,21 +1,33 @@
-
-
-
 require('dotenv').config();
 
 const express = require('express');
-const mysql = require('mysql2');
 const session = require('express-session');
 const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
-const bcrypt = require('bcrypt');
+
+// Import MongoDB connection
+const connectDB = require('./config/db');
+
+// Import Models
+const User = require('./models/User');
+const Phone = require('./models/Phone');
+const Order = require('./models/Order');
 
 const app = express();
 
+// Connect to MongoDB Atlas
+connectDB();
+
+app.use(cors());
+// explicit OPTIONS routes for CORS preflight on API endpoints
+app.options('/register', cors());
+app.options('/login', cors());
+app.options('/phones', cors());
+app.options('/phones/:id', cors());
+app.options('/buy-phone', cors());
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 
 // Serve frontend files
 // allow the server to read the front_end files
@@ -23,7 +35,6 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
 
 app.use(session({
     secret: process.env.SESSION_SECRET || "phone_shop_secret",
@@ -44,20 +55,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 app.use('/uploads', express.static('uploads'));
 
-//database connection pool
-
-const db = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
-    waitForConnections: true,
-    connectionLimit: 10
-}).promise();
-
-console.log("Database Pool Ready &  DATABASE CONNECTION SUCCESSFUL");
-
 // Serve .html on root
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'home.html'));
@@ -67,25 +64,37 @@ app.get('/', (req, res) => {
 //register root route
 
 app.post('/register', async (req, res) => {
-
     try {
+        const { username, email, password, phone } = req.body;
 
-        const { username, email, password } = req.body;
+        if (!username || !email || !password) {
+            return res.status(400).json({ message: "Username, email, and password are required" });
+        }
 
-        const hashedPassword = await bcrypt.hash(password, 20);
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(409).json({ message: "Email is already registered" });
+        }
 
-        await db.query(
-            "INSERT INTO users (username,email,password,role) VALUES (?,?,?,'user')",
-            [username, email, hashedPassword]
-        );
+        const newUser = new User({
+            username,
+            email,
+            password,
+            role: 'user',
+            phone: phone || null
+        });
 
-        res.json({ message: "User registered successfully" });
+        await newUser.save();
+
+        res.status(201).json({
+            message: "User registered successfully",
+            user: { username, email, phone: phone || '', role: 'user' }
+        });
 
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Registration failed" });
     }
-
 });
 
 //login root route
@@ -96,28 +105,29 @@ app.post('/login', async (req, res) => {
 
         const { email, password } = req.body;
 
-        const [rows] = await db.query(
-            "SELECT * FROM users WHERE email=?",
-            [email]
-        );
+        const user = await User.findOne({ email });
 
-        if (rows.length === 0)
+        if (!user)
             return res.status(401).json({ message: "User not found" });
 
-        const user = rows[0];
+        const isMatch = await user.comparePassword(password);
 
-        const match = await bcrypt.compare(password, user.password);
-
-        if (!match)
+        if (!isMatch)
             return res.status(401).json({ message: "Wrong password" });
 
         req.session.user = user;
 
-        if (user.role === "admin") {
-            res.json({ redirect: "admin.html" });
-        } else {
-            res.json({ redirect: "account.html" });
-        }
+        const redirectPage = user.role === "admin" ? "admin.html" : "account.html";
+
+        res.json({
+            message: "Login successful",
+            redirect: redirectPage,
+            user: {
+                username: user.username,
+                email: user.email,
+                role: user.role
+            }
+        });
 
     } catch (err) {
         console.error(err);
@@ -132,7 +142,7 @@ app.get('/phones', async (req, res) => {
 
     try {
 
-        const [phones] = await db.query("SELECT * FROM phones_list");
+        const phones = await Phone.find().sort({ createdAt: -1 });
         res.json(phones);
 
     } catch (err) {
@@ -147,12 +157,13 @@ app.get('/phones/:id', async (req, res) => {
 
     try {
 
-        const [result] = await db.query(
-            "SELECT * FROM phones_list WHERE id=?",
-            [req.params.id]
-        );
+        const phone = await Phone.findById(req.params.id);
 
-        res.json(result[0]);
+        if (!phone) {
+            return res.status(404).json({ message: "Phone not found" });
+        }
+
+        res.json(phone);
 
     } catch (err) {
         res.status(500).send(err);
@@ -166,16 +177,22 @@ app.post('/phones', upload.single('image'), async (req, res) => {
 
     try {
 
-        const { name, price, description } = req.body;
+        const { name, brand, price, description } = req.body;
 
         const image = req.file
             ? '/uploads/' + req.file.filename
             : null;
 
-        await db.query(
-            "INSERT INTO phones_list (name,price,description,image) VALUES (?,?,?,?)",
-            [name, price, description, image]
-        );
+        const newPhone = new Phone({
+            name,
+            brand: brand || null,
+            price,
+            description: description || null,
+            image
+        });
+
+        
+        await newPhone.save();
 
         res.json({ message: "Phone added successfully" });
 
@@ -194,21 +211,25 @@ app.put('/phones/:id', upload.single('image'), async (req, res) => {
         const { name, brand, price, description } = req.body;
         const id = req.params.id;
 
+        const updateData = {
+            name,
+            brand: brand || null,
+            price,
+            description: description || null
+        };
+
         if (req.file) {
+            updateData.image = '/uploads/' + req.file.filename;
+        }
 
-            await db.query(`
-                UPDATE phones_list
-                SET name=?, brand=?, price=?, description=?, image=?
-                WHERE id=?
-            `, [name, brand, price, description, '/uploads/' + req.file.filename, id]);
+        const phone = await Phone.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true }
+        );
 
-        } else {
-
-            await db.query(`
-                UPDATE phones_list
-                SET name=?, brand=?, price=?, description=?
-                WHERE id=?
-            `, [name, brand, price, description, id]);
+        if (!phone) {
+            return res.status(404).json({ message: "Phone not found" });
         }
 
         res.json({ message: "Phone updated successfully" });
@@ -225,7 +246,12 @@ app.delete('/phones/:id', async (req, res) => {
 
     try {
 
-        await db.query("DELETE FROM phones_list WHERE id=?", [req.params.id]);
+        const phone = await Phone.findByIdAndDelete(req.params.id);
+
+        if (!phone) {
+            return res.status(404).json({ message: "Phone not found" });
+        }
+
         res.json({ message: "Phone deleted successfully" });
 
     } catch (err) {
@@ -253,10 +279,15 @@ app.post('/buy-phone', async (req, res) => {
 
         const { customer_name, phone_number, phone_id, phone_name, price } = req.body;
 
-        await db.query(`
-            INSERT INTO orders (customer_name, phone_number, phone_id, phone_name, price)
-            VALUES (?, ?, ?, ?, ?)
-        `, [customer_name, phone_number, phone_id, phone_name, price]);
+        const newOrder = new Order({
+            customer_name,
+            phone_number,
+            phone_id,
+            phone_name,
+            price
+        });
+
+        await newOrder.save();
 
         res.json({ message: "Order placed successfully" });
 
@@ -272,7 +303,7 @@ app.get('/orders', async (req, res) => {
 
     try {
 
-        const [orders] = await db.query("SELECT * FROM orders ORDER BY id DESC");
+        const orders = await Order.find().sort({ createdAt: -1 });
         res.json(orders);
 
     } catch (err) {
